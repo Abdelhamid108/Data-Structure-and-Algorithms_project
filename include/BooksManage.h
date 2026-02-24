@@ -1,25 +1,41 @@
-# ifndef Books_Manage_H
-# define Books_Manage_H
+#pragma once
 
-# include "DoublyLinked_list.h"
-# include "book.h"
+#include "DoublyLinked_list.h"
 
-/// @brief 
-class book_manage
-{
-    public:
-    void insert_book();
-    void delete_book ();
-    void search();
-    void sort();
-    void display();
-    void destroy_list();
-    void get_length ();
-    void updateBook();
-    void show_lists();
+/**
+ * @brief Application service coordinating user actions across multiple lists.
+ */
+class BookManager {
+public:
+    static constexpr int kMaxLists = 5;
 
-    doubly_linkedlist library_list[5];
-    int index;
+    BookManager();
+
+    bool createList(int oneBasedIndex, const std::string& listName);
+    bool openList(int oneBasedIndex);
+    void printLists() const;
+
+    void insertBookInteractive();
+    void deleteBookInteractive();
+    void searchBookInteractive() const;
+    void sortBooksInteractive();
+    void displayBooksInteractive() const;
+    void clearCurrentListInteractive();
+    void printCurrentListLength() const;
+    void updateBookInteractive();
+
+private:
+    struct LibrarySlot {
+        std::string name{"UNSET"};
+        DoublyLinkedList list;
+    };
+
+    std::array<LibrarySlot, kMaxLists> libraries_{};
+    int activeListIndex_{0};
+
+    [[nodiscard]] bool isListCreated(int zeroBasedIndex) const;
+    [[nodiscard]] LibrarySlot& activeSlot();
+    [[nodiscard]] const LibrarySlot& activeSlot() const;
+    static Book buildBookFromInput();
+    static std::string categoryFromChoice(int choice);
 };
-
-#endif

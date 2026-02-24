@@ -1,214 +1,88 @@
-/****** Include Section   ******/
-#include "BooksManage.h"  // Make sure the header file is included.
+#include "BooksManage.h"
+#include "InputUtils.h"
 
-/****** Functions Section ******/
+namespace {
 
-/**
- *@brief Template function to handle any user inputs
- *@param (lowerLimit) Minimum value user input
- *       (upperLimit) Maximum value user input
- *       (prompt)     String to print for user
- *@return user input or choice
- */
-template <typename T>
-T getValidatedInput(T lowerLimit, T upperLimit, const string& prompt)
-{
-    T input;
-
-    while(true)
-    {
-        cout << prompt;
-        cin >> input;
-
-        if ((cin.fail()) || (input < lowerLimit) || (input > upperLimit))
-        {
-            cin.clear();  // Clear the error state
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Ignore invalid input
-            cout << "Invalid input. Please enter a value between " << lowerLimit << " and " << upperLimit << ".\n";
-        }
-        else
-        {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Only here to clear the buffer after valid input
-            break;  // Valid input, break the loop
-        }
-    }
-    return input;
+void printMainMenu() {
+    std::cout << "\n========== Main Menu ==========\n"
+              << "1) Show all lists\n"
+              << "2) Create a new list\n"
+              << "3) Open an existing list\n"
+              << "4) Exit\n";
 }
 
-
-void printascii(string file)
-{
-    string line = " "; // Variable to hold each line read from the file
-    ifstream infile; // Create an input file stream object
-
-    // Attempt to open the file with a hardcoded path
-    infile.open("E:\\college\\3\\1\\data structures and algorithms\\DataStructureProject_last\\asci.text.txt");
-    if (infile.is_open())   // Check if the file is successfully opened
-    {
-        // Read the file line by line until the end
-        while (getline(infile, line))
-        {
-            cout << line << endl; // Output each line to the console
-        }
-    }
-    else
-    {
-        // Error message if the file could not be opened
-        cout << "file failed \n";
-    }
-    // Close the file after processing
-    infile.close();
-
+void printListMenu() {
+    std::cout << "\n======= Library List Menu =======\n"
+              << "1) Insert book\n"
+              << "2) Delete book\n"
+              << "3) Sort books by title\n"
+              << "4) Display books\n"
+              << "5) Clear current list\n"
+              << "6) Search by title\n"
+              << "7) Print number of books\n"
+              << "8) Update book\n"
+              << "9) Back to main menu\n";
 }
 
-/**
- *@brief  Function to print menu choices
- *@param  void
- *@return void
- */
-void Book_Management_Menu()
-{
-    cout << "*****************************************\n";
-    cout << "          Book Management Menu           \n";
-    cout << "*****************************************\n\n";
-    cout << "1. Insert book\n";
-    cout << "2. Delete book\n";
-    cout << "3. Sort books\n";
-    cout << "4. Display books\n";
-    cout << "5. Destroy book list\n";
-    cout << "6. Search for a book\n";
-    cout << "7. Get the length of the book list\n";
-    cout << "8. Update information for a certain book\n\n";
-}
-void Main_Menu()
-{
-     cout << "*****************************************\n";
-     cout << "               Main Menu                 \n";
-     cout << "*****************************************\n\n";
+}  // namespace
 
-        cout<<"1-Show lists "<<endl;
-        cout<<"2-creat new list "<<endl;
-}
+int main() {
+    BookManager manager;
 
+    bool running = true;
+    while (running) {
+        printMainMenu();
+        const int choice = io::readBoundedNumber(1, 4, "Select option: ");
 
-int main()
-{
-    //asci art output
-    string file="asci.text";
-    //printascii(file);
-    //Sleep(8000);     // DELAY FOR 30 SECOND
-    //system("cls");   // Clear Terminal Window
-    int choose;  // To store the user's choice
-    int n;      // TO store the user choise
-    char k;    // To store the user's response for repeating operations
-    book_manage obj;      
-    do 
-    {
-        Main_Menu();
-        cout<<"enter your choise : ";
-        cin>>n;
-     switch (n)
-     {
-     case 1:
-        obj.show_lists();
+        switch (choice) {
+            case 1:
+                manager.printLists();
+                break;
+            case 2: {
+                const int listIndex = io::readBoundedNumber(1, BookManager::kMaxLists, "List number (1-5): ");
+                const std::string listName = io::readNonEmptyLine("List name: ");
 
-        cout<<"enter the number of list you want to open : ";
-        cin>>obj.index;
-        do
-    {
-        //system("cls"); // Clear Terminal Window
-        Book_Management_Menu(); // Display the menu options
-
-        // Input validation for the user's choice (1-8)
-        choose = getValidatedInput(1, 8, "Enter your choice (1-8): ");
-
-        // Perform the operation based on the user's choice
-        switch (choose)
-        {
-        case 1:
-            //system("cls"); // Clear Terminal Window
-            obj.insert_book();
-            break;
-        case 2:
-            //system("cls"); // Clear Terminal Window
-            obj.delete_book();
-            break;
-        case 3:
-            //system("cls"); // Clear Terminal Window
-            obj.sort();
-            break;
-        case 4:
-            //system("cls"); // Clear Terminal Window
-            obj.display();
-            break;
-        case 5:
-            //system("cls"); // Clear Terminal Window
-            obj.destroy_list();
-            break;
-        case 6:
-            //system("cls"); // Clear Terminal Window
-            obj.search();
-            break;
-        case 7:
-            //system("cls"); // Clear Terminal Window
-            obj.get_length();
-            break;
-        case 8:
-            //system("cls"); // Clear Terminal Window
-            obj.updateBook();
-            break;
-        default:
-            //system("cls"); // Clear Terminal Window
-            cout << "Unexpected error.\n"; // This will never happen due to the input validation
-            break;
-        }
-
-        // Ask the user if they want to perform another operation
-        cout << "\nDo you want another operation? (y/n): ";
-
-        // Input validation for repeat question ('y' or 'n')
-        while(true)
-        {
-            cin >> k; // Take 'Y' or 'y' or 'N' or 'n' from user
-
-            if ((cin.fail()) || ((k != 'y') && (k != 'Y') && (k != 'n') && (k != 'N')))
-            {
-                cin.clear(); // Clear the error state of cin
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
-                cout << "Invalid input. Please enter 'y' to continue or 'n' to exit : ";// Prompt again
+                if (manager.createList(listIndex, listName)) {
+                    std::cout << "List created successfully.\n";
+                } else {
+                    std::cout << "Failed to create list. Check index/name.\n";
+                }
+                break;
             }
-            else
-            {
-                break; // Valid input, break out of the loop
+            case 3: {
+                manager.printLists();
+                const int listIndex = io::readBoundedNumber(1, BookManager::kMaxLists, "Open list number (1-5): ");
+
+                if (!manager.openList(listIndex)) {
+                    std::cout << "Cannot open this list. Create it first.\n";
+                    break;
+                }
+
+                bool inListMenu = true;
+                while (inListMenu) {
+                    printListMenu();
+                    const int action = io::readBoundedNumber(1, 9, "Select action: ");
+
+                    switch (action) {
+                        case 1: manager.insertBookInteractive(); break;
+                        case 2: manager.deleteBookInteractive(); break;
+                        case 3: manager.sortBooksInteractive(); break;
+                        case 4: manager.displayBooksInteractive(); break;
+                        case 5: manager.clearCurrentListInteractive(); break;
+                        case 6: manager.searchBookInteractive(); break;
+                        case 7: manager.printCurrentListLength(); break;
+                        case 8: manager.updateBookInteractive(); break;
+                        case 9: inListMenu = false; break;
+                    }
+                }
+                break;
             }
+            case 4:
+                running = false;
+                break;
         }
-    }while((k == 'y') || (k == 'Y'));   // Repeat if the user enters 'y' or 'Y' 
-        break;
-
-     case 2:
-        cout<<"enter the number of the list you want to creat : ";
-        cin>>obj.index;
-        cout<<"enter the name of the list : ";
-        cin>>obj.library_list[obj.index].list_name;
-        break;
-
-     default:
-        break;
     }
-    cout<<"\n\nDo you want to go back to the Main Menu  (y/n) : ";
-    cin>>k;
-    }while((k == 'y') || (k == 'Y'));   // Repeat if the user enters 'y' or 'Y'
-    //system("cls"); // Clear Terminal Window
 
-    // End of the program
-    cout << "\n\n\n*****************************************\n";
-    cout << "      Exiting the program. Goodbye!      \n";
-    cout << "*****************************************\n";
-
-    //system("cls");
-
-    //printascii(file);
-    //Sleep(30000);   //Delay for 30 second
-
+    std::cout << "\nExiting the program. Goodbye!\n";
     return 0;
 }

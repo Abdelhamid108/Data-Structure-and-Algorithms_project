@@ -1,0 +1,17 @@
+# Build outputs
+build/
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+
+# IDE files
+.vscode/
+.idea/
+*.cbp
+*.depend
+
+# Misc
+.DS_Store

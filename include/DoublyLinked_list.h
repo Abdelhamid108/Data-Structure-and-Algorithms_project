@@ -1,58 +1,83 @@
-#ifndef DOUBLY_LINKED_LIST_H
-#define DOUBLY_LINKED_LIST_H
+#pragma once
 
-#include "book.h"  // For the book class, which holds the data for each node
+#include "book.h"
 
-// Node class to represent each element in the doubly linked list
-class node
-{
-    public:
-    book data;  // Data for each node, stored as a 'book' object
-    node* next = nullptr;  // Pointer to the next node in the list (initialized to null)
-    node* prev = nullptr;  // Pointer to the previous node in the list (initialized to null)
+/**
+ * @brief Custom doubly linked list implementation for library books.
+ *
+ * Design notes:
+ * - `head_` points to first node, `tail_` points to last node.
+ * - Every node stores two links:
+ *   - `next` -> next node toward tail
+ *   - `prev` -> previous node toward head
+ * - This enables O(1) insertion/deletion at both ends and
+ *   bidirectional traversal.
+ */
+class DoublyLinkedList {
+private:
+    /**
+     * @brief Internal node storing a book and bidirectional pointers.
+     */
+    struct Node {
+        Book data;
+        Node* next{nullptr};
+        Node* prev{nullptr};
+
+        explicit Node(Book value) : data(std::move(value)) {}
+    };
+
+public:
+    DoublyLinkedList() = default;
+    ~DoublyLinkedList();
+
+    DoublyLinkedList(const DoublyLinkedList&) = delete;
+    DoublyLinkedList& operator=(const DoublyLinkedList&) = delete;
+
+    DoublyLinkedList(DoublyLinkedList&& other) noexcept;
+    DoublyLinkedList& operator=(DoublyLinkedList&& other) noexcept;
+
+    [[nodiscard]] bool isEmpty() const noexcept;
+    [[nodiscard]] int size() const noexcept;
+    [[nodiscard]] bool containsTitle(const std::string& title) const;
+
+    bool insertFront(Book book);
+    bool insertBack(Book book);
+    bool insertAt(int oneBasedPosition, Book book);
+
+    bool removeFront();
+    bool removeBack();
+    bool removeAt(int oneBasedPosition);
+    bool removeByTitle(const std::string& title);
+
+    [[nodiscard]] Book* findByTitle(const std::string& title) noexcept;
+    [[nodiscard]] const Book* findByTitle(const std::string& title) const noexcept;
+
+    /**
+     * @brief Sort nodes in ascending order by title using insertion sort on links.
+     */
+    void sortByTitle();
+
+    /**
+     * @brief Remove all nodes and reset list to empty state.
+     */
+    void clear();
+
+    /**
+     * @brief Display books from head to tail.
+     */
+    void displayForward() const;
+
+    /**
+     * @brief Display books from tail to head.
+     */
+    void displayBackward() const;
+
+private:
+    Node* head_{nullptr};
+    Node* tail_{nullptr};
+    int length_{0};
+
+    [[nodiscard]] Node* nodeAt(int oneBasedPosition) const;
+    void unlinkNode(Node* node);
+    static void printTableHeader();
 };
-
-// Doubly linked list class
-class doubly_linkedlist
-{
-    public:
-    // Constructor to initialize the list
-    doubly_linkedlist();
-    // Destructor to clean up memory when the list is destroyed
-    ~doubly_linkedlist();
-
-    // Methods for inserting nodes into the list at various positions
-    void insert_first();  // Insert at the beginning of the list
-    void insert_last();   // Insert at the end of the list
-    //void insert_before(); // Insert before a specific node (based on book name)
-    void insert_at_pos(int n);  // Insert at a specific position (based on index)
-
-    // Methods for deleting nodes from the list
-    void delete_first();  // Delete the first node in the list
-    void delete_book(const string& name);   // Delete a specific book by its name
-    void delete_book(node* delPtr);      //Delete a book using a pointer to the node
-    void delete_at_end();  // Delete the last node in the list
-    void delete_at_pos(int n);  // Delete a node at a specific position (based on index)
-
-
-    void update_book(const string& book_name);
-    // Methods for searching, displaying, and sorting the list
-    bool isFound(const string& name);  // Check if a book with the given name is in the list
-    void display_Forward();  // Display the list from head to tail
-    void display_backward();  // Display the list from tail to head
-    node* search_Book(const string& name);  // Search for a book by its name and display its data
-    void sort();  // Sort the list alphabetically by book name
-
-    // Utility methods for managing the list
-    int get_length();  // Display the current length of the list
-    bool isEmpty();  // Check if the list is empty
-    void freeList();  // Delete all nodes in the list to free memory
-
-    string list_name;
-    protected:
-    node* head;  // Pointer to the first node (head) of the list
-    node* tail;  // Pointer to the last node (tail) of the list
-    int length;  // Number of nodes in the list
-};
-
-#endif // DOUBLY_LINKED_LIST_H
